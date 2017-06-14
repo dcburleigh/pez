@@ -5,14 +5,14 @@
 The goal of this introduction is to provide enough background to use github for code development and collaboration.
 
 Git is very flexible; this introduction makes a lot of idiosyncratic decisions. You can assume that 
-any of those decisions can be changed to suit your needs.s
+any of those decisions can be changed to suit your needs.
+
 
 ### Advantages
 
-* Source code control
-* Personal backup
-* Collaboration
-* Sharing
+* Source code control - all of your code changes are documented and time-stamped
+* Personal backup - keeping your copy on Github (or some other cloud-based system) provides redundancy
+* Collaboration - any of your coworkers can access your code or contribute updates
 
 ### git concepts
 
@@ -43,17 +43,28 @@ Github is a cloud-based git repository.
 
 ## Set up for using Github
 
-
-### install a git client
+### install git
 
 You can find lots of references on the internets.
 
-Edit your local git configuration
+You can install the standard command-line tools
+  https://git-scm.com/book/en/v2/Getting-Started-Installing-Git
+  
+  https://www.atlassian.com/git/tutorials/install-git
+  
 
-* choose an editor
+There are several stand-alone GUI tools for using git.
+
+Git commands are also integrated with most IDEs (Eclipse, IntelliJ, etc.)
+
+
+### Choose an editor
+
 In the examples below, replace 'edit' with command of your choice.
 
-Experiment with some dummy repos
+This might be a plain text editor  ( vim, EMACS, Notepad++).
+
+Or it might be full IDE (Integrated Development environment). 
 
 ### create a github account
 
@@ -61,7 +72,11 @@ Use your cdw email
 
 https://github.com/
 
-* Contact Brad to to join the cdwlabs team
+Contact Brad Pinter to to join the cdwlabs team
+
+Access your github account from your computer
+https://help.github.com/articles/keeping-your-account-and-data-secure/
+
 
 * Set up SSH keys 
 Generate RSA public/private keys
@@ -76,7 +91,6 @@ Generate RSA public/private keys
 git clone git@github.com:cdwlabs/<REPO>.git
 
 ls -l <REPO>
-
 
 
 ## Create a personal repo 
@@ -309,6 +323,7 @@ git push --tags
 Verify @GitHub
 
 ## References
+
 https://guides.github.com/activities/hello-world/
 
 http://rogerdudler.github.io/git-guide/
