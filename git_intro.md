@@ -14,7 +14,7 @@ any of those decisions can be changed to suit your needs.
 * Personal backup - keeping your copy on Github (or some other cloud-based system) provides redundancy
 * Collaboration - any of your coworkers can access your code or contribute updates
 
-### git concepts
+### Git concepts
 
 Git is a distributed version control system.
 
