@@ -43,17 +43,15 @@ Github is a cloud-based git repository.
 
 ## Set up for using Github
 
-### install git
-
-You can find lots of references on the internets.
+### Install git
 
 You can install the standard command-line tools
-  https://git-scm.com/book/en/v2/Getting-Started-Installing-Git
-  
-  https://www.atlassian.com/git/tutorials/install-git
+*  https://git-scm.com/book/en/v2/Getting-Started-Installing-Git
+*  https://www.atlassian.com/git/tutorials/install-git
   
 
 There are several stand-alone GUI tools for using git.
+* https://git-scm.com/downloads/guis
 
 Git commands are also integrated with most IDEs (Eclipse, IntelliJ, etc.)
 
@@ -66,31 +64,36 @@ This might be a plain text editor  ( vim, EMACS, Notepad++).
 
 Or it might be full IDE (Integrated Development environment). 
 
-### create a github account
+### Create a github account
 
 Use your cdw email
+* https://github.com/
 
-https://github.com/
+Contact Brad Pinter to to join the cdwlabs team.
 
-Contact Brad Pinter to to join the cdwlabs team
-
-Access your github account from your computer
+There are several ways to access your github account from your computer
 https://help.github.com/articles/keeping-your-account-and-data-secure/
 
 
-* Set up SSH keys 
+For example, to authenticate via SSH:
+
 Generate RSA public/private keys
-@github:  <avatar> > Settings > SSH and GPG keys
-  New SSH Key
 
-* verifiy your keys
-  ssh -T git@github.com 
+@github:  <avatar> > Settings > SSH and GPG keys > New SSH Key
 
-* verify you can access a repo
+### Try it out
 
-git clone git@github.com:cdwlabs/<REPO>.git
+Verify you keys work
+ 
+ > ssh -T git@github.com 
 
-ls -l <REPO>
+Verify you can access a repo 
+
+> git clone git@github.com:dcburleigh/pez.git
+
+If the clone command is succesful, you will have a copy of this repo in the directory 'pez'
+
+ls -l pez
 
 
 ## Create a personal repo 
