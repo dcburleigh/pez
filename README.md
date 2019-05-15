@@ -1,5 +1,5 @@
 # Pez
 
-in progress
+Sample WebEx teams bot
 
-
+## Installation
