@@ -98,8 +98,6 @@ def get_headers( admin=False ):
 def hello():
     headers = get_headers()
     url = host + '/hello'
-    #url = host + '/testxxx'
-    #data = { 'project': 'VTI-Phone-Home', 'application': 'pho', 'user': user, 'details': details}
     data = { 'name': 'John Doe'}
 
     print("get: %s" % url)
@@ -108,6 +106,19 @@ def hello():
     if r.status_code == 200:
         #print( "OK" )
         print("got text:{}".format(r.text) )
+    else:
+        print( "url %s failed (%s) \n%s" % (url, r.status_code, r.text) )
+
+
+def test():
+    headers = get_headers()
+    url = host + '/test'
+    data = { 'name': 'John Doe'}
+
+    print("get: %s" % url)
+    r = requests.get( url, headers=headers, params=data)
+    if r.status_code == 200:
+        print("success - got text:{}".format(r.text) )
     else:
         print( "url %s failed (%s) \n%s" % (url, r.status_code, r.text) )
 
@@ -126,6 +137,22 @@ def post_hello():
     else:
         print( "url %s failed (%s) \n%s" % (url, r.status_code, r.text) )
 
+def post(path, data):
+    headers = get_headers()
+
+    url = host + path
+    print("get: %s" % url)
+    r = requests.post( url, headers=headers, json=data)
+    if r.status_code == 200:
+        #print( "OK" )
+        print("got text:{}".format(r.text) )
+        return r.text
+    else:
+        print( "url %s failed (%s) \n%s" % (url, r.status_code, r.text) )
+
+def whois(user_id):
+    t = post('/whois', {'user_id': user_id})
+
 def main():
     action = None
     global server, token, show_json
@@ -136,6 +163,8 @@ def main():
 
     # actions
     parser.add_argument("--hello", help="test access", action='store_true' )
+    parser.add_argument("--test", help="test access", action='store_true' )
+
     parser.add_argument("--whois", help="show user", action='store_true' )
     parser.add_argument("--lookup", help="find a user", action='store_true' )
     parser.add_argument("--reports", help="show users reporting to current user ",  action='store_true' )
@@ -163,7 +192,7 @@ def main():
         userid = args.userid
 
     if args.whois:
-        whois()
+        whois( args.userid )
     elif args.lookup:
         lookup()
     elif args.reports:
@@ -172,6 +201,8 @@ def main():
         show_reports_to()
     elif args.hello:
         hello()
+    elif args.test:
+        test()
     else:
         raise Exception("invalid action")
 

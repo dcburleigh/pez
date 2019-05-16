@@ -50,8 +50,9 @@ ETC = ./etc
 #
 #  run options
 #
+LINK = --link deldevdb0:deldevdb
 
-VOLUMES =
+VOLUMES = $(LINK)
 
 #  .....................................................................
 include ../common/makefile.inc
@@ -62,12 +63,9 @@ APPFILES = $(SRCPATH)/main.py $(SRCPATH)/requirements.txt
 $(APPFILES): $(SRCPATH)/% : $(MYDIR)/../server/%
 	cp $< $@
 
-#$(SRCPATH)/auth $(SRCPATH)/staffdb: $(SRCPATH)/%:  $(REPO)/server/%
-#	rsync -av $</ $@/
-
 app-mods:
 	@rsync -a $(REPO)/server/auth/ $(SRCPATH)/auth/
-	@rsync -a $(REPO)/server/staffdb/ $(SRCPATH)/staffdb/
+	@rsync -a $(REPO)/server/deldevdb/ $(SRCPATH)/deldevdb/
 
 #  .....................................................................
 
@@ -86,11 +84,14 @@ re-app: clean-src app-files
 
 RUNARGS = --env-file=env.txt
 
-
-ETCFILES = env.txt
-
-$(ETCFILES): %: $(ETC)/%
+$(SRCPATH)/deldev_db.cnf: $(SRCPATH)/%: $(ETC)/%
 	cp $< $@
+
+env.txt: %: $(ETC)/%
+	cp $< $@
+
+etc-files: env.txt  $(SRCPATH)/deldev_db.cnf
+
 
 #  ...................................................................
 # hose-to-container
@@ -106,7 +107,7 @@ test-auth:
 	@wget $(APPURL)/test -O test.html
 	ls -l test.html
 
-hello:
+hello-world:
 	@echo URL $(APPURL)
 	@wget $(APPURL)/hello -O hello.html
 	ls -l hello.html
@@ -133,8 +134,14 @@ $(CLIENTFILES): %: $(REPO)/client/%
 
 client-files: $(CLIENTFILES)
 
-test-hello: client-files
-	PEZ_AUTH_TOKEN=$(PEZ_AUTH_TOKEN) python client.py --hello --server local 
+hello: client-files
+	@PEZ_AUTH_TOKEN=$(PEZ_AUTH_TOKEN) python client.py --hello --server local
+
+test1: client-files
+	@PEZ_AUTH_TOKEN=$(PEZ_AUTH_TOKEN) python client.py --test --server local
+
+whois: client-files
+	@PEZ_AUTH_TOKEN=$(PEZ_AUTH_TOKEN) python client.py --server local --whois --userid 2474
 
 #  .....................................................................
 
@@ -151,4 +158,4 @@ check-depends:
 makefile Dockerfile $(OTHERFILES): %:  $(MYDIR)/%
 	rsync -av $< .
 
-update-files: update-common Dockerfile  $(OTHERFILES)  app-files $(ETCFILES) client-files
+update-files: update-common Dockerfile  $(OTHERFILES)  app-files etc-files client-files
