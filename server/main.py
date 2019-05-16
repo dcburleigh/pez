@@ -17,8 +17,9 @@ import json
 #import sys
 import re
 import os
-from auth import check_auth
+from auth import check_auth, api
 from deldevdb.staffdb import StaffDB
+
 
 app = Flask(__name__)
 dbh = None
@@ -103,6 +104,7 @@ def whois():
         staff_dbh.open_query()
         row = staff_dbh.next_row()
         if not row:
+            info = "c=%s " % staff_dbh.cfg_file
             return "%s - no user found q=%s " % ( obj['user_id'], staff_dbh.sql)
         return format_row(row)
 

@@ -1,0 +1,14 @@
+# create hook for pezbot
+
+name=PezBot
+resource=messages
+event=created
+#secret=
+targetUrl=
+# -- filter
+#roomId=
+#roomType=direct
+#roomType=group
+#personEmail=
+#mentionedPeople
+#

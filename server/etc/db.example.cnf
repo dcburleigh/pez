@@ -1,0 +1,8 @@
+[client]
+# host is alias created by the 'link' option, which references the database container
+# default is the deldev database
+# set the password for user created in the database container
+host = deldevdb
+database = deldev
+user = deldevadmin
+password = PWD

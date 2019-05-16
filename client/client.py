@@ -29,15 +29,10 @@ or on the command line
 """
 
 import sys
-#import urllib
 import requests
-#import os.path
-#import re
 import json
 import datetime
-#import getopt
 import os
-#from config import Config
 import argparse
 
 #

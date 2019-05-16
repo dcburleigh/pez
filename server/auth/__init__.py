@@ -1,8 +1,11 @@
 import os
 import re
+from webexteamssdk import WebexTeamsAPI
 
 auth_token = None
 auth_token_admin = None
+webex_teams_access_token = None
+
 t = os.environ.get('PEZ_AUTH_TOKEN')
 if t:
     auth_token = t
@@ -14,6 +17,12 @@ if t:
     auth_token_admin = t
 
 auth_token_pattern = re.compile('^Bearer (\w+)$')
+
+api = None
+t = os.environ.get('WXT_ACCESS_TOKEN')
+if t:
+    webex_teams_access_token = t
+    api = WebexTeamsAPI(access_token=webex_teams_access_token )
 
 def check_auth(h=None, token=None):
 
