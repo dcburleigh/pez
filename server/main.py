@@ -18,25 +18,17 @@ import json
 import re
 import os
 from auth import check_auth
+from deldevdb.staffdb import StaffDB
 
 app = Flask(__name__)
 dbh = None
 last_err = None
+staff_dbh = None
+staff_dbh = StaffDB()
 
 @app.route("/")
 def about(info=''):
     return "PezBot " + info
-
-@app.route("/whois")
-def whois():
-    info = ''
-    if not dbh:
-        init_dbh()
-
-    if last_err:
-        return "DB error: " + last_err
-
-    return "Hello World! "
 
 
 @app.errorhandler(401)
@@ -54,8 +46,8 @@ def page_not_found(error):
     return text, 404
 
 @app.route("/test", methods=['GET', 'POST'])
-def test(project=None):
-    err = check_auth()
+def test():
+    err = check_auth(request.headers)
     if err:
         abort(401, err)
 
@@ -67,12 +59,64 @@ def test(project=None):
     for item in ['Content-Length', 'User-Agent']:
         #info['header-' + item] = request.headers[item]
         info['header-' + item] = request.headers.get(item, '')
+
+    n = staff_dbh.count()
+    info['rows' ] = str(n)
+
     #info['headers'] = request.headers
     text = json.dumps( info, indent=4)
     return text
 
+@app.route("/whois", methods=['GET', 'POST'])
+def whois():
+    info = {}
+
+    err = check_auth(h=request.headers)
+    if err:
+        info['error'] = err
+        return json.dumps( info, indent=4)
+    if request.method == 'POST':
+
+        #info['header'] = request.headers
+        #print request.headers
+        info['state'] = "got headers"
+        #return json.dumps( info, indent=4)
+
+        if not request.is_json:
+            info['error'] = "not json"
+            #abort(400)
+            #abort( {'400': "not json"})
+            return json.dumps( info, indent=4)
+        try:
+            obj = request.get_json()
+        except Exception as err:
+            #print err
+            info['data_in'] = request.data
+            info['error'] = "no json object" + str(err)
+            return json.dumps( info, indent=4)
+
+        if not obj:
+            info['error'] = "no json object"
+            return json.dumps( info, indent=4)
+
+        staff_dbh.build_select_query( {'user_id': obj['user_id']})
+        staff_dbh.open_query()
+        row = staff_dbh.next_row()
+        if not row:
+            return "%s - no user found q=%s " % ( obj['user_id'], staff_dbh.sql)
+        return format_row(row)
+
+    return "Hello World! "
+
+def format_row(row):
+    text = ''
+    if not row:
+        return "No user found"
+    text += "%s (%s)  - %s [ %s ]" % ( row['name'], row['user_id'], row['title'], row['department'])
+    return text
+
 @app.route("/hello", methods=['GET', 'POST'])
-def hello(project=None):
+def hello():
     text = ''
     info  = { 'method': request.method}
 
