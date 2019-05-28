@@ -24,7 +24,7 @@ REPOROOT = /data/git
 # .....................................................................
 
 
-IMG = pez
+IMG = pezbot
 CNAME = $(IMG)
 ###CPATH = examples/$(IMG)
 
@@ -63,9 +63,10 @@ APPFILES = $(SRCPATH)/main.py $(SRCPATH)/requirements.txt
 $(APPFILES): $(SRCPATH)/% : $(MYDIR)/../server/%
 	cp $< $@
 
-app-mods:
+app-mods server-files:
 	@rsync -a $(REPO)/server/auth/ $(SRCPATH)/auth/
 	@rsync -a $(REPO)/server/deldevdb/ $(SRCPATH)/deldevdb/
+	@rsync -a $(REPO)/server/spark/ $(SRCPATH)/spark/
 
 #  .....................................................................
 
@@ -134,14 +135,19 @@ $(CLIENTFILES): %: $(REPO)/client/%
 
 client-files: $(CLIENTFILES)
 
+S = --server local
+S = --server ace
 hello: client-files
-	@PEZ_AUTH_TOKEN=$(PEZ_AUTH_TOKEN) python client.py --hello --server local
+	@PEZ_AUTH_TOKEN=$(PEZ_AUTH_TOKEN) python client.py --hello $(S)
 
 test1: client-files
-	@PEZ_AUTH_TOKEN=$(PEZ_AUTH_TOKEN) python client.py --test --server local
+	@PEZ_AUTH_TOKEN=$(PEZ_AUTH_TOKEN) python client.py --test $(S)
 
 whois: client-files
-	@PEZ_AUTH_TOKEN=$(PEZ_AUTH_TOKEN) python client.py --server local --whois --userid 2474
+	@PEZ_AUTH_TOKEN=$(PEZ_AUTH_TOKEN) python client.py $(S) --whois --userid 2474
+
+post-hook: client-files
+		@PEZ_AUTH_TOKEN=$(PEZ_AUTH_TOKEN) python client.py $(S) --hook hook_message.json
 
 #  .....................................................................
 
@@ -159,3 +165,6 @@ makefile Dockerfile $(OTHERFILES): %:  $(MYDIR)/%
 	rsync -av $< .
 
 update-files: update-common Dockerfile  $(OTHERFILES)  app-files etc-files client-files
+
+update-server:  server-files
+	docker cp src/spark/  $(CNAME):/app/
