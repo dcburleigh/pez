@@ -20,7 +20,6 @@ import sys
 import os
 
 from configparser import ConfigParser
-#from config import Config
 
 class DB:
     dbh = None
@@ -60,6 +59,7 @@ class DB:
         if not fh:
             raise Exception("cannot open " + self.cfg_file)
 
+        #print("read %s" % self.cfg_file)
         try:
             config = ConfigParser()
             config.read(self.cfg_file)
@@ -69,6 +69,7 @@ class DB:
         return
 
     def open(self):
+        #print("open connection to %s" % ( self.cfg.get('host')))
         if self.dbh:
             return
         try:
@@ -180,11 +181,13 @@ class DB:
 
     def open_query(self, sql=None):
         #global current_cursor
-
         if sql:
             self.sql = sql
 
         self.open()
+        if not self.dbh:
+            print("no DB handle")
+            return
         try:
             self.current_cursor = self.dbh.cursor()
             self.current_cursor.execute(self.sql)
@@ -193,9 +196,11 @@ class DB:
             print( "open failed: " + str(err))
             return
 
-    def next_row(self):
+    def next_row(self, cur=None):
+        if not cur:
+            cur = self.current_cursor
         try:
-            result = self.current_cursor.fetchone()
+            result = cur.fetchone()
             if not result:
                 return
             return result
@@ -203,6 +208,7 @@ class DB:
         except Exception as err:
             print( "query failed: " + str(err))
             return
+
     def count_column(self, col):
         """ return the number of occurrences of the values
         in a specified column"""
