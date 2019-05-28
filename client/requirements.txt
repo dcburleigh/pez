@@ -1,3 +1,6 @@
 #Python 3.6?+
 requests
-config
+#config
+ConfigParser
+pymysql
+webexteamssdk

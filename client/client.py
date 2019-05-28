@@ -34,6 +34,8 @@ import json
 import datetime
 import os
 import argparse
+from pathlib import Path
+from spark import auth_token, auth_token_admin
 
 #
 # http://docs.python-requests.org/en/master/
@@ -44,28 +46,13 @@ server = 'prod'
 #server = 'bot'
 host = None
 show_json = False
-token = None
 
 name = None
 userid = None
 email = None
 
 def init():
-    global host, token, admin_token
-
-    if not token:
-        t = os.environ.get('PEZ_AUTH_TOKEN')
-        if t:
-            token = t
-            admin_token = t
-        else:
-            raise Exception('NO token specified')
-
-    t = os.environ.get('PEZ_ADMIN_AUTH_TOKEN')
-    if t:
-        ###print( "token", t )
-        admin_token = t
-    #print( "using token ", token, admin_token )
+    global host
 
     if server == 'host':
         #host = 'http://localhost:5000'
@@ -84,9 +71,9 @@ def get_headers( admin=False ):
     headers = None
     headers = {'Content-Type': 'application/json'}
     if admin:
-        headers['Authorization'] = 'Bearer ' + admin_token
+        headers['Authorization'] = 'Bearer ' + auth_token_admin 
     else:
-        headers['Authorization'] = 'Bearer ' + token
+        headers['Authorization'] = 'Bearer ' + auth_token
 
     return headers
 
@@ -114,6 +101,30 @@ def test():
     r = requests.get( url, headers=headers, params=data)
     if r.status_code == 200:
         print("success - got text:{}".format(r.text) )
+    else:
+        print( "url %s failed (%s) \n%s" % (url, r.status_code, r.text) )
+
+def post_hook_message(fname):
+    hfile = Path(fname)
+    if not hfile.exists():
+        raise Exception("No such file %s" % fname)
+
+    with hfile.open() as fh:
+        text = fh.read()
+
+    #print("got h=%s" % text)
+    info = json.loads( text )
+    #print("got msg id=%s" % info['id'])
+    post_directory(info)
+
+def post_directory(data):
+    headers = get_headers()
+    url = host + '/directory'
+
+    r = requests.post( url, headers=headers, json=data)
+    if r.status_code == 200:
+        #print( "OK" )
+        print("got text:{}".format(r.text) )
     else:
         print( "url %s failed (%s) \n%s" % (url, r.status_code, r.text) )
 
@@ -153,9 +164,7 @@ def main():
     global server, token, show_json
     global name, userid, email
 
-
     parser = argparse.ArgumentParser()
-
     # actions
     parser.add_argument("--hello", help="test access", action='store_true' )
     parser.add_argument("--test", help="test access", action='store_true' )
@@ -169,15 +178,15 @@ def main():
     parser.add_argument("--email" )
     parser.add_argument("--userid", help="AD User ID (sAMAccountName)" )
 
+    parser.add_argument("--hook", help="read and parse a webhook file, and post" )
+
     parser.add_argument("--server", help="server type: one of bot, host, local " )
 
     args = parser.parse_args()
     if args.server:
         server = args.server
     init()
-
-
-    print("s=%s" % server)
+    #print("s=%s" % server)
 
     if args.name:
         name = args.name
@@ -194,6 +203,8 @@ def main():
         show_reports()
     elif args.reportsto:
         show_reports_to()
+    elif args.hook:
+        post_hook_message( args.hook )
     elif args.hello:
         hello()
     elif args.test:
