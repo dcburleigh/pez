@@ -99,6 +99,7 @@ class StaffDB(DB):
         text = '';
         user_id = user_id_in
         n = 0
+        lines = []
         while True:
             n += 1
             ###print("u=%s" % user_id)
@@ -108,6 +109,7 @@ class StaffDB(DB):
                 break
 
             #print('row={}'.format(row))
+            lines.append(  self.format_user_row(row) )
             if not text == '':
                 text = "\n" + text
             text = self.format_user_row(row) + text
@@ -117,8 +119,16 @@ class StaffDB(DB):
 
             user_id = row['manager_user_id']
 
-            if n > 10:
-                break
+            if n > 20:
+                break # sanity check
+
+        l = 0
+        text = ''
+        lines.reverse()
+        for line in lines:
+            text += '. ' * l
+            text += line + "\n"
+            l += 1
 
         return text
 
@@ -145,7 +155,7 @@ class StaffDB(DB):
                 continue
 
             nr += 1
-            text +=  '..' * l
+            text +=  '. ' * l
             text += self.format_user_row(row)
             text += "\n"
             ###print("%d t=%s" % (nr, text))

@@ -79,7 +79,8 @@ def directory():
 
     err = check_auth(request.headers)
     if err:
-        abort(401, err)
+        print("err=%s" % err)
+        #abort(401, err)
 
     #
     # parse hook
@@ -90,6 +91,7 @@ def directory():
         info['error'] = "not json"
         return json.dumps( info, indent=4)
 
+    print("parse")
     try:
         obj = request.get_json()
     except Exception as err:
@@ -102,16 +104,16 @@ def directory():
         info['error'] = "no json object"
         return json.dumps( info, indent=4)
 
-    #print("got message id=" + obj['id'])
+    print("got webhook id=" + obj['id'])
 
     msg = HookMessage( obj )
     msg.get_text()
     msg.get_creator()
-    #msg.show()  # TESTING 
+    #msg.show()  # TESTING
 
     if msg.from_me():
         # don't respond to my own posts
-        return
+        return ''
 
     if not msg.check_org():
         #abort('401': "invalid org")

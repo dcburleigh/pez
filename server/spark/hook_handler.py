@@ -15,7 +15,11 @@ show_pattern = re.compile('show\s+(user|managers|reports)\s*')
 #show_for_pattern = re.compile('show\s+(user|managers|reports)(\s+for\s+(\w+))?')
 show_for_pattern = re.compile('show\s+(user|managers|reports)\s+for\s+(\w+)')
 
+split_pattern = re.compile("\n")
 default_message = "I don't understand this message"
+
+max_len = 7439
+break_limit = max_len - 200 # allow line of 200 characters
 
 def pez_handler( msg ):
     resp = response_message(msg)
@@ -25,15 +29,34 @@ def pez_handler( msg ):
         return resp
 
     print("message from: %s " % msg.creator_name )
-    post_response(msg, resp)
-
+    try:
+        post_response(msg, resp)
+    except Exception as err:
+        pass
+        return "error"
     return resp
 
 def post_response(msg, resp):
-    test_room_id = 'Y2lzY29zcGFyazovL3VzL1JPT00vYmFjMmZiYjAtODE3OC0xMWU5LWI3YjUtOWQ3OTkxODQwZTdj'  # PezTest
+    # room_id = 'Y2lzY29zcGFyazovL3VzL1JPT00vYmFjMmZiYjAtODE3OC0xMWU5LWI3YjUtOWQ3OTkxODQwZTdj'  # PezTest
 
+    room_id = msg.data['roomId']
+    print("room=%s response length=%d" % ( room_id, len(resp) ))
+    # Unable to post message to room:
+    # Message length limited to 7439 characters before encryption
+    # and 10000 characters after encryption.
     # TODO: format as markdown
-    api.messages.create( roomId=test_room_id, text=resp)
+    text = ''
+    nb = 0
+    for line in resp.splitlines():
+        if len(text) > break_limit:
+            print("next batch, len=%d" % len(text) )
+            nb += 1
+            api.messages.create( roomId=room_id, text=text)
+            #print(text)
+            text = ''
+        text += line + "\n"
+
+    api.messages.create( roomId=room_id, text=text)
 
 def response_message(msg):
     if help_pattern.search(msg.message_text):
@@ -67,11 +90,7 @@ def response_message(msg):
         user_id = result.group(2)
         # user_id = cache.get(key=msg.createdBy, 'user_id')
         if not user_id:
-            #return "No user selected"
-            user_id = '2474'
-            user_id = 'toddpet'
-            user_id =  '2164'
-            user_id = '2311'
+            return "No user selected"
 
         return user_details(user_id, type)
 

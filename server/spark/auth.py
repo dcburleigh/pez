@@ -15,7 +15,6 @@ def check_org_id(org_id_in):
         return False
 
 def check_auth(h=None, token=None):
-
     if not token:
         token = auth_token
 
