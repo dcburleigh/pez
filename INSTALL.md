@@ -28,6 +28,9 @@ set DB_CONFIG_FILE
 
 see: docker/makefile
 
+Configure proxy;
+see GIT/kofun/README.md
+
 ## create bot
 
 ### Webex teams bot
@@ -40,5 +43,13 @@ https://developer.webex.com
 edit etc/env.txt
 set PEZBOT_ACCESS_TOKEN to the access token created above
 
+### update database
+
+
 
 ### create hook
+
+* install spark-projects
+* set env
+* edit hook config
+see: client/hook.ini

@@ -55,6 +55,11 @@ LINK = --link deldevdb0:deldevdb
 VOLUMES = $(LINK)
 
 #  .....................................................................
+REPOTARGETS = update-pez-repo
+
+update-pez-repo: $(REPO)/.git
+	cd $(REPO); git pull
+
 include ../common/makefile.inc
 
 APPFILES = $(SRCPATH)/main.py   $(SRCPATH)/uwsgi.ini

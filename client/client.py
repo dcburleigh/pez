@@ -71,7 +71,7 @@ def get_headers( admin=False ):
     headers = None
     headers = {'Content-Type': 'application/json'}
     if admin:
-        headers['Authorization'] = 'Bearer ' + auth_token_admin 
+        headers['Authorization'] = 'Bearer ' + auth_token_admin
     else:
         headers['Authorization'] = 'Bearer ' + auth_token
 
@@ -123,8 +123,8 @@ def post_directory(data):
 
     r = requests.post( url, headers=headers, json=data)
     if r.status_code == 200:
-        #print( "OK" )
-        print("got text:{}".format(r.text) )
+        print( "OK" )
+        #print("got text:{}".format(r.text) )
     else:
         print( "url %s failed (%s) \n%s" % (url, r.status_code, r.text) )
 

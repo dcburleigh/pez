@@ -6,6 +6,8 @@ SOPT = --server prod
 SOPT = --server ace
 SOPT = --server local
 
+# test hook file label
+T = managers
 
 -include makefile.conf
 
@@ -44,6 +46,12 @@ endif
 
 #  .....................................................................
 
+
+create-hook: check-auth-token client-files  py-project
+	python hooks.py --hello $(SOPT)
+
+#  .....................................................................
+
 #
 # use client to hit special esrver endpoints
 #
@@ -56,16 +64,16 @@ hello-local: check-auth-token client-files
 
 
 whois: client-files
-	@PEZ_AUTH_TOKEN=$(PEZ_AUTH_TOKEN) python client.py $(S) --whois --userid 2474
-
-
+	@PEZ_AUTH_TOKEN=$(PEZ_AUTH_TOKEN) python client.py $(SOPT) --whois --userid 2474
 
 HFILE = hook_message.json
-HFILE = data/hook_message_whois.json
+#HFILE = data/hook_message_whois.json
 HFILE = data/hook_message_name.json
 HFILE = data/hook_message_reports.json
-HFILE = data/hook_message_managers.json
-
+#HFILE = data/hook_message_managers.json
+HFILE = data/hook_message_test.json
+HFILE = data/hook_message_$(T).json
+#HFILE = data/hook_message.json
 
 #
 # use show command to access server directly from the host
