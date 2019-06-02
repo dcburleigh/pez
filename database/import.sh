@@ -4,7 +4,7 @@ dumpfile=staff.sql
 # Path to container home directory on host
 DBDIR=../mysql-deldev
 
-# volume on host host
+# volume on host
 HVOL=$DBDIR/shared/admin
 
 # corresponding shared volume in container
