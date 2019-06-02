@@ -22,7 +22,6 @@ import os
 from configparser import ConfigParser
 
 class DB:
-    dbh = None
     #cfg_file = 'deldev_db.cfg'
     cfg_file = 'deldev_db.ini'
     cfg = None
@@ -34,6 +33,7 @@ class DB:
 
     def __init__(self,f=None, t=None, columns=[]):
 
+        self.dbh = None # the database connection
         self.sql = None
 
         self.current_cursor = None
@@ -55,6 +55,7 @@ class DB:
         if not self.cfg_file:
             raise Exception('no config file')
 
+        #print("read %s" % self.cfg_file )
         fh = open(self.cfg_file)
         if not fh:
             raise Exception("cannot open " + self.cfg_file)
@@ -71,7 +72,9 @@ class DB:
     def open(self):
         #print("open connection to %s" % ( self.cfg.get('host')))
         if self.dbh:
-            return
+            if self.dbh.open:
+                #print('still open')
+                return
         try:
             self.dbh = pymysql.connect(
                 host=self.cfg.get('host', 'localhost'),
@@ -87,7 +90,8 @@ class DB:
             return
 
     def close(self):
-        self.dbh.close()
+        if self.dbh:
+            self.dbh.close()  # close the database connection
 
     def add_item(self, item ):
         #print "add item: p=", item['project']
@@ -180,6 +184,7 @@ class DB:
         return sql
 
     def open_query(self, sql=None):
+        """open cursor for a query"""
         #global current_cursor
         if sql:
             self.sql = sql
@@ -193,6 +198,8 @@ class DB:
             self.current_cursor.execute(self.sql)
         except Exception as err:
             #return "count failed: " + str(err)
+            #??? self.close()
+            # self.current_cursor = None
             print( "open failed: " + str(err))
             return
 
@@ -202,10 +209,14 @@ class DB:
         try:
             result = cur.fetchone()
             if not result:
+                #self.close() # ????
+                # close cursor
+                # cur.close()
                 return
             return result
 
         except Exception as err:
+            self.close()
             print( "query failed: " + str(err))
             return
 
@@ -249,6 +260,7 @@ class DB:
             while True:
                 result = cursor.fetchone()
                 if not result:
+                    # self.close # ???
                     break
                 n += 1
                 #print("{} r={}".format( n, result ))
@@ -256,6 +268,7 @@ class DB:
                 clist.append( { 'name': result[col_name], 'count': result['num']})
         except Exception as err:
             #return "count failed: " + str(err)
+            self.close()
             print( "count failed: " + str(err))
             return
 
@@ -269,9 +282,9 @@ class DB:
             cursor = self.dbh.cursor()
             cursor.execute(sql)
             result = cursor.fetchone()
+            # self.close()
             #print "got results, type", type(result)
         except Exception as err:
             return( "count failed: " + str(err))
-            return
 
         return result['num']

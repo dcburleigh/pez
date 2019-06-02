@@ -6,6 +6,10 @@ class StaffDB(DB):
 
     def __init__(self, f=None):
 
+        super().__init__()
+
+        self.user_row_format = 'text';
+
         self.wildcard = True
         self.include_inactive = False
         self.include_all = True
@@ -13,7 +17,7 @@ class StaffDB(DB):
         self.table_name = 'staff'
 
         self.columns = ['user_id', 'name', 'email', 'title', 'manager_user_id']
-        self.read_config(f)
+        #self.read_config(f)
 
     def get_user(self, user_id):
         self.build_select_query( {'user_id': user_id })
@@ -79,6 +83,7 @@ class StaffDB(DB):
                 a.append(row)
 
         if n == 0:
+            print("q=%s" % self.sql )
             return "No names match"
 
         if n > 1:
@@ -178,15 +183,30 @@ class StaffDB(DB):
         if not row:
             text += "No match on %s\n%s" % ( user_id, text)
             return text
-        text = self.format_user_row(row) + "\n"
-        text += self._list_reports( user_id, 1)
+
+        text = self._list_reports( user_id, 1)
+        if text == '':
+            text = "No reports found "
+        text = self.format_user_row(row) + "\n" + text
+        #text += self._list_reports( user_id, 1)
         return text
 
-    def format_user_row(self, row, format='text'):
+    def format_user_row(self, row):
         text = ''
         if not row:
             return "No user found"
+
+        aflag = ''
         if row['active'] == 0:
-            text += "X "
-        text += "%s (%s)  - %s [ %s ]" % ( row['name'], row['user_id'], row['title'], row['department'])
+            aflag += "X "
+
+        if self.user_row_format == 'text':
+            text += "%s%s (%s)  - %s [ %s ]" % ( aflag, row['name'], row['user_id'], row['title'], row['department'])
+        elif self.user_row_format == 'email':
+            text += "%s%s (%s) - %s  - %s [ %s ]" % ( aflag, row['name'], row['user_id'], row['email'], row['title'], row['department'])
+        elif self.user_row_format == 'md':
+            text += "%s[%s|mailto:%s] (%s) _%s_ [ %s ]" % ( aflag, row['name'], row['user_id'], row['email'], row['title'], row['department'])
+        else:
+            text = row['name']
+
         return text
