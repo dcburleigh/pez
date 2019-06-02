@@ -151,9 +151,6 @@ test1: client-files
 whois: client-files
 	@PEZ_AUTH_TOKEN=$(PEZ_AUTH_TOKEN) python client.py $(S) --whois --userid 2474
 
-post-hook: client-files
-		@PEZ_AUTH_TOKEN=$(PEZ_AUTH_TOKEN) python client.py $(S) --hook hook_message.json
-
 #  .....................................................................
 
 
