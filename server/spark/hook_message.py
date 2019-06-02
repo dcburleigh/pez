@@ -13,6 +13,8 @@ class HookMessage():
         self.creator_email = ''
         self.author_name = ''
         self.author_email = ''
+        self.room_name = ''
+        self.room_type = ''
 
         self.api = get_api()
         me = self.api.people.me()
@@ -26,6 +28,7 @@ class HookMessage():
         #print("data: message ID: {} ".format( self.data) )
         print("hook created by: %s - %s / id=%s" % ( self.creator_name, self.creator_email, self.createdBy ))
         print("message author: %s (%s) " % ( self.author_name, self.author_email))
+        print("Room: '%s' - %s (%s)" %( self.room_name, self.room_type,  self.data['roomId']) )
         print("Message: %s" % self.message_text)
 
     def get_creator(self):
@@ -47,6 +50,12 @@ class HookMessage():
 
         msg = self.api.messages.get( self.data['id'] )
         self.message_text = msg.text
+
+    def get_room(self):
+        r = self.api.rooms.get( self.data['roomId'])
+        print("room: %s" % r )
+        self.room_name = r.title
+        self.room_type = r.type
 
     def from_me(self):
         return self.data['personId'] == self.my_id

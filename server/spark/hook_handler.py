@@ -6,14 +6,14 @@ from . import api
 last_err = None
 staff_dbh = None
 staff_dbh = StaffDB()
-help_pattern = re.compile('.*help.*')
-whois_pattern = re.compile('whois (\w+)\s*')
-lookup_pattern = re.compile('lookup\s+(name|userid|email)\s+([\@\w\.\']+)')
-lookup_name_pattern = re.compile('lookup\s+name\s+(\w+)\s+(\w+)')
+help_pattern = re.compile('.*help.*', re.I)
+whois_pattern = re.compile('whois (\w+)\s*', re.I)
+lookup_pattern = re.compile('lookup\s+(name|userid|email)\s+([\@\w\.\']+)', re.I)
+lookup_name_pattern = re.compile('lookup\s+name\s+(\w+)\s+(\w+)', re.I)
 
-show_pattern = re.compile('show\s+(user|managers|reports)\s*')
+show_pattern = re.compile('show\s+(user|managers|reports)\s*', re.I)
 #show_for_pattern = re.compile('show\s+(user|managers|reports)(\s+for\s+(\w+))?')
-show_for_pattern = re.compile('show\s+(user|managers|reports)\s+for\s+(\w+)')
+show_for_pattern = re.compile('show\s+(user|managers|reports)\s+for\s+(\w+)', re.I)
 
 split_pattern = re.compile("\n")
 default_message = "I don't understand this message"
@@ -22,13 +22,14 @@ max_len = 7439
 break_limit = max_len - 200 # allow line of 200 characters
 
 def pez_handler( msg ):
-    resp = response_message(msg)
-
     if msg.from_me():
         # don't respond
         return resp
 
-    print("message from: %s " % msg.creator_name )
+    staff_dbh.user_row_format = 'email'
+    resp = response_message(msg)
+
+    #print("message from: %s " % msg.creator_name )
     try:
         post_response(msg, resp)
     except Exception as err:
@@ -37,10 +38,10 @@ def pez_handler( msg ):
     return resp
 
 def post_response(msg, resp):
-    # room_id = 'Y2lzY29zcGFyazovL3VzL1JPT00vYmFjMmZiYjAtODE3OC0xMWU5LWI3YjUtOWQ3OTkxODQwZTdj'  # PezTest
-
+    # ?
+    # direct room:
     room_id = msg.data['roomId']
-    print("room=%s response length=%d" % ( room_id, len(resp) ))
+    #print("room=%s response length=%d" % ( room_id, len(resp) ))
     # Unable to post message to room:
     # Message length limited to 7439 characters before encryption
     # and 10000 characters after encryption.
@@ -59,13 +60,14 @@ def post_response(msg, resp):
     api.messages.create( roomId=room_id, text=text)
 
 def response_message(msg):
+    staff_dbh.user_row_format = 'email'
     if help_pattern.search(msg.message_text):
         return help()
 
     result = whois_pattern.search(msg.message_text)
     if result:
         user_id = result.group(1)
-        print("whois: %s" % user_id)
+        #print("whois: %s" % user_id)
         return staff_dbh.whois(user_id)
 
     result = lookup_name_pattern.search(msg.message_text)
@@ -123,10 +125,11 @@ def lookup(type, value):
 
     if type == 'name':
         value += '%'
+        #print("lookup (%s): '%s' " % (type, value))
         return staff_dbh.lookup_name(value)
 
 def user_details(user_id, type):
-    print("details (%s): '%s' " % (type, user_id))
+    #print("details (%s): '%s' " % (type, user_id))
     if type == 'managers':
         return staff_dbh.list_managers(user_id)
 
