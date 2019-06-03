@@ -7,3 +7,6 @@ dumpfile=staff.sql
 mysqldump --opt deldev staff staff_email > $dumpfile
 
 ls -l $dumpfile
+
+# TODO:
+#  upload to file-depot

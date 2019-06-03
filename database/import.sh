@@ -19,6 +19,11 @@ then
   exit
 fi
 
+# TODO:
+#  download from file-depot
+#  wget http://filedepot.cdw.com/files/deldev/staff.sql -O $dumpfile
+#
+
 if [[ ! -f $dumpfile ]]
 then
   echo ERROR no such file $dumpfile
