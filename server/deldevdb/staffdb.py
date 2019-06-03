@@ -32,12 +32,14 @@ class StaffDB(DB):
 
     def lookup_email(self, email):
         self.build_select_query( {'email': email })
+        #self.build_select_query( {'email': email, 'active':1 })
 
         text = self.lookup_results()
         if not text == '':
             return text
 
-        self.sql = "select staff.* from staff join staff_email as se on se.fkstaff = staff.id and se.email = '%s' " % email
+        #self.sql = "select staff.* from staff join staff_email as se on se.fkstaff = staff.id and se.email like '%s' " % email
+        self.sql = "select distinct staff.* from staff join staff_email as se on se.fkstaff = staff.id and se.email like '%s' " % email
         text =  self.lookup_results()
         if text == '':
             return "No matches found "
@@ -62,42 +64,25 @@ class StaffDB(DB):
             text += self.format_user_row(row)
             text += "\n"
 
+        if n > 0:
+            text += "%d matches found " % n
+
         return text
 
     def lookup_name(self, name):
         self.build_select_query( {'name': name })
+        #self.build_select_query( {'name': name, 'active': 1})
+        text =  self.lookup_results()
+        if text == '':
+            return "No matches found "
+        return text
 
-        self.open_query()
-        a = []
-        n = 0
-        text = ''
-        while True:
-            row =  self.next_row()
-            if not row:
-                break
-            n += 1
-            text += self.format_user_row(row)
-            text += "\n"
-
-            if row['active'] == 1:
-                a.append(row)
-
-        if n == 0:
-            print("q=%s" % self.sql )
-            return "No names match"
-
-        if n > 1:
-            ###print("%d matches " % n)
-            # try active
-            if len(a) > 0:
-                text = ''
-                for row in a:
-                    text += self.format_user_row(row)
-                    text += "\n"
-
-                return text
-            #print("no active matches")
-
+    def lookup_last_name(self, name):
+        self.build_select_query( {'last_name': name })
+        #self.build_select_query( {'name': name, 'active': 1})
+        text =  self.lookup_results()
+        if text == '':
+            return "No matches found "
         return text
 
     def list_managers(self,user_id_in, format='text'):

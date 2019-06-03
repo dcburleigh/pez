@@ -10,6 +10,9 @@ help_pattern = re.compile('.*help.*', re.I)
 whois_pattern = re.compile('whois (\w+)\s*', re.I)
 lookup_pattern = re.compile('lookup\s+(name|userid|email)\s+([\@\w\.\']+)', re.I)
 lookup_name_pattern = re.compile('lookup\s+name\s+(\w+)\s+(\w+)', re.I)
+lookup_last_name_pattern = re.compile('lookup\s+last( name)?\s+(\w+)\s+(\w+)', re.I)
+
+lookup_qname_pattern = re.compile('lookup\s+name\s+[\"\'](\w+)\s+(\w+)[\"\']', re.I)
 
 show_pattern = re.compile('show\s+(user|managers|reports)\s*', re.I)
 #show_for_pattern = re.compile('show\s+(user|managers|reports)(\s+for\s+(\w+))?')
@@ -28,7 +31,7 @@ def pez_handler( msg ):
 
     staff_dbh.user_row_format = 'email'
     resp = response_message(msg)
-
+    print("last query:%s" % staff_dbh.sql )
     #print("message from: %s " % msg.creator_name )
     try:
         post_response(msg, resp)
@@ -69,6 +72,12 @@ def response_message(msg):
         user_id = result.group(1)
         #print("whois: %s" % user_id)
         return staff_dbh.whois(user_id)
+
+    result = lookup_qname_pattern.search(msg.message_text)
+    if result:
+        type = 'name'
+        value = result.group(1) + ' ' + result.group(2)
+        return lookup(type, value)
 
     result = lookup_name_pattern.search(msg.message_text)
     if result:
@@ -121,6 +130,9 @@ def lookup(type, value):
         return staff_dbh.whois( value )
 
     if type == 'email':
+        n = value.find('@')
+        if n == -1:
+            value += '@%'
         return staff_dbh.lookup_email(value)
 
     if type == 'name':
