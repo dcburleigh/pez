@@ -197,7 +197,8 @@ class StaffDB(DB):
             text += "%s%s (%s) - %s  - %s [ %s ]" % ( aflag, row['name'], row['user_id'], row['email'], row['title'], row['department'])
         elif self.user_row_format == 'md':
             #text += "%s[%s|mailto:%s] (**%s**) _%s_ [ %s ]" % ( aflag, row['name'], row['email'], row['user_id'],  row['title'], row['department'])
-            text += "%s[%s](mailto:%s) (**%s**) _%s_ [ %s ]" % ( aflag, row['name'], row['email'], row['user_id'],  row['title'], row['department'])
+            text += "%s[%s](mailto:%s) (**%s**) _%s_ [ %s ] \n" % ( aflag, row['name'], row['email'], row['user_id'],  row['title'], row['department'])
+            #text += "- %s[%s](mailto:%s) (**%s**) _%s_ [ %s ]\n" % ( aflag, row['name'], row['email'], row['user_id'],  row['title'], row['department'])
         else:
             text = row['name']
 

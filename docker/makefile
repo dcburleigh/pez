@@ -28,6 +28,7 @@ IMG = pezbot
 CNAME = $(IMG)
 ###CPATH = examples/$(IMG)
 
+DBCONTAINER = pezdb
 REPO = $(REPOROOT)/pez
 MYDIR = $(REPOROOT)/pez/docker
 
@@ -50,10 +51,11 @@ ETC = ./etc
 #
 #  run options
 #
-LINK = --link deldevdb0:deldevdb
 
 # Map the MySQL container to the alias 'deldevdb' used in the CNF files
-LINK = --link pezdb:deldevdb
+#LINK = --link deldevdb0:deldevdb
+#LINK = --link pezdb:deldevdb
+LINK = --link $(DBCONTAINER):deldevdb
 
 VOLUMES = $(LINK)
 
