@@ -2,9 +2,9 @@
 # export from production database
 
 # assumes user's CNF is set up
-
+DB=test
 dumpfile=staff.sql
-mysqldump --opt deldev staff staff_email > $dumpfile
+mysqldump --opt $DB staff staff_email > $dumpfile
 
 ls -l $dumpfile
 

@@ -3,6 +3,7 @@ dumpfile=staff.sql
 
 # Path to container home directory on host
 DBDIR=../mysql-deldev
+DBDIR=docker
 
 # volume on host
 HVOL=$DBDIR/shared/admin
@@ -12,6 +13,7 @@ CVOL=/home/admin
 
 # name of container
 DBCNAME=deldevdb0
+DBCNAME=pezdb
 
 if [[ ! -d $DBDIR ]]
 then
@@ -36,3 +38,5 @@ ls -l $DBDIR/shared/admin/$dumpfile
 # import
 
 docker exec $DBCNAME bash -c "mysql deldev < /home/admin/$dumpfile"
+
+docker ps
