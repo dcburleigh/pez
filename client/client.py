@@ -67,18 +67,18 @@ def init():
         host = 'http://deldev.ucalpha.com:8020'
 
 
-def get_headers( admin=False ):
+def get_headers( auth=False, admin=False ):
     headers = None
     headers = {'Content-Type': 'application/json'}
     if admin:
         headers['Authorization'] = 'Bearer ' + auth_token_admin
-    else:
+    elif auth:
         headers['Authorization'] = 'Bearer ' + auth_token
 
     return headers
 
 def hello():
-    headers = get_headers()
+    headers = get_headers(auth=True)
     url = host + '/hello'
     data = { 'name': 'John Doe'}
 
@@ -93,7 +93,7 @@ def hello():
 
 
 def test():
-    headers = get_headers()
+    headers = get_headers(auth=True)
     url = host + '/test'
     data = { 'name': 'John Doe'}
 
@@ -124,12 +124,12 @@ def post_directory(data):
     r = requests.post( url, headers=headers, json=data)
     if r.status_code == 200:
         print( "OK" )
-        #print("got text:{}".format(r.text) )
+        print("got text:{}".format(r.text) )
     else:
         print( "url %s failed (%s) \n%s" % (url, r.status_code, r.text) )
 
 def post_hello():
-    headers = get_headers()
+    headers = get_headers(auth=True)
     url = host + '/hello'
     #url = host + '/testxxx'
     #data = { 'project': 'VTI-Phone-Home', 'application': 'pho', 'user': user, 'details': details}
