@@ -39,7 +39,7 @@ install-py: requirements.txt
 
 ifneq ($(PEZ_AUTH_TOKEN),)
 
-check-auth-token:
+has-auth-token check-auth-token:
 	@echo OK
 
 endif
@@ -62,7 +62,6 @@ hello: check-auth-token client-files
 hello-local: check-auth-token client-files
 	python client.py --hello --server local
 
-
 whois: client-files
 	@PEZ_AUTH_TOKEN=$(PEZ_AUTH_TOKEN) python client.py $(SOPT) --whois --userid 2474
 
@@ -79,7 +78,11 @@ HFILE = data/hook_message_$(T).json
 # use show command to access server directly from the host
 #
 
-show-hook: check-auth-token client-files server-files $(HFILE)
+display-hook: check-auth-token  client-files server-files $(HFILE)
+	echo f is $(HFILE)
+	python show.py --hook $(HFILE) --display 
+
+show-hook: check-auth-token  client-files server-files $(HFILE)
 	echo f is $(HFILE)
 	python show.py --hook $(HFILE)
 
@@ -89,12 +92,13 @@ show-whois: check-auth-token client-files server-files data/hook_message_whois.j
 
 #
 # use client script to access server running via container
+#    emulate the message posted from a web hook
 #
 post-help:  check-auth-token client-files data/hook_message_help.json
 		python client.py $(SOPT) --hook data/hook_message_help.json
 
-post-whois: check-auth-token client-files data/hook_message_whois.json
+post-whois: client-files data/hook_message_whois.json
 		python client.py $(SOPT) --hook data/hook_message_whois.json
 
-post-hook: check-auth-token client-files $(HFILE)
+post-hook:  client-files $(HFILE)
 		python client.py $(SOPT) --hook $(HFILE)

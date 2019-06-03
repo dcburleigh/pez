@@ -1,5 +1,4 @@
 
-#import os
 import re
 import sys
 import json
@@ -7,12 +6,9 @@ import argparse
 from pathlib import Path
 from deldevdb.staffdb import StaffDB
 from spark.hook_message import HookMessage
-#from spark.hook_handler import pez_handler
 from spark import hook_handler
 
 staff_dbh = None
-help_pattern = re.compile('[^\S]*help[^\S]*')
-whois_pattern = re.compile('[^\S]*whois (\w+)[^\S]*')
 
 def get_dbh():
     global staff_dbh
@@ -62,6 +58,7 @@ def show_hook(f = 'hook_message.json'):
 
     msg.get_creator()
     msg.get_text()
+    msg.get_room()
     msg.show()
 
 def show_db():
@@ -85,9 +82,13 @@ def main():
 	#show_hook()
     parser = argparse.ArgumentParser()
     parser.add_argument("--hook", help="read and parse a webhook file, and post" )
+    parser.add_argument("-d", "--display", help="display contents", action='store_true')
+
     args = parser.parse_args()
 
-    if args.hook:
+    if args.display:
+        show_hook(args.hook)
+    elif args.hook:
         test_hook(args.hook)
 
 if __name__ == "__main__":
