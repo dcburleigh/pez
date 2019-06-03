@@ -24,11 +24,8 @@ from spark.hook_message import HookMessage
 from spark.hook_handler import pez_handler
 
 app = Flask(__name__)
-#dbh = None
-last_err = None
+
 staff_dbh = StaffDB()
-help_pattern = re.compile('.*help.*')
-whois_pattern = re.compile('whois (\w+) ')
 
 @app.route("/")
 def about(info=''):
@@ -77,11 +74,6 @@ def test():
 def directory():
     info = {}
 
-    err = check_auth(request.headers)
-    if err:
-        print("err=%s" % err)
-        #abort(401, err)
-
     #
     # parse hook
     #
@@ -91,7 +83,7 @@ def directory():
         info['error'] = "not json"
         return json.dumps( info, indent=4)
 
-    print("parse")
+    #print("parse")
     try:
         obj = request.get_json()
     except Exception as err:
@@ -113,6 +105,7 @@ def directory():
 
     if msg.from_me():
         # don't respond to my own posts
+        print("skip me")
         return ''
 
     if not msg.check_org():
