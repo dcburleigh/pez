@@ -7,7 +7,7 @@ last_err = None
 staff_dbh = None
 staff_dbh = StaffDB()
 help_pattern = re.compile('.*help.*', re.I)
-whois_pattern = re.compile('whois (\w+)\s*', re.I)
+whois_pattern = re.compile('who\s*is (\w+)\s*', re.I)
 lookup_pattern = re.compile('lookup\s+(name|userid|email)\s+([\@\w\.\']+)', re.I)
 lookup_name_pattern = re.compile('lookup\s+name\s+(\w+)\s+(\w+)', re.I)
 lookup_last_name_pattern = re.compile('lookup\s+last( name)?\s+(\w+)\s+(\w+)', re.I)
@@ -21,6 +21,7 @@ show_for_pattern = re.compile('show\s+(user|managers|reports)\s+for\s+(\w+)', re
 split_pattern = re.compile("\n")
 default_message = "I don't understand this message"
 
+format_pattern = re.compile('format\s+(plain|name|text|email|md)')
 max_len = 7439
 break_limit = max_len - 200 # allow line of 200 characters
 
@@ -29,7 +30,7 @@ def pez_handler( msg ):
         # don't respond
         return resp
 
-    staff_dbh.user_row_format = 'email'
+    #staff_dbh.user_row_format = 'email'
     resp = response_message(msg)
     print("last query:%s" % staff_dbh.sql )
     #print("message from: %s " % msg.creator_name )
@@ -49,21 +50,37 @@ def post_response(msg, resp):
     # Message length limited to 7439 characters before encryption
     # and 10000 characters after encryption.
     # TODO: format as markdown
+    #
+    # api
+    #
     text = ''
     nb = 0
     for line in resp.splitlines():
         if len(text) > break_limit:
-            print("next batch, len=%d" % len(text) )
+            print("next batch, len=%d f=%s" % (len(text), staff_dbh.user_row_format) )
             nb += 1
-            api.messages.create( roomId=room_id, text=text)
+            if staff_dbh.user_row_format == 'md':
+                api.messages.create( roomId=room_id,  markdown=text)
+            else:
+                api.messages.create( roomId=room_id, text=text)
+
             #print(text)
             text = ''
         text += line + "\n"
-
-    api.messages.create( roomId=room_id, text=text)
+        
+    if staff_dbh.user_row_format == 'md':
+        api.messages.create( roomId=room_id,  markdown=text)
+    else:
+        api.messages.create( roomId=room_id, text=text)
 
 def response_message(msg):
-    staff_dbh.user_row_format = 'email'
+    #sstaff_dbh.user_row_format = 'email'
+    staff_dbh.user_row_format = 'name'
+    result = format_pattern.search(msg.message_text)
+    if result:
+        staff_dbh.user_row_format = result.group(1)
+        #print("format=%s" % staff_dbh.user_row_format)
+
     if help_pattern.search(msg.message_text):
         return help()
 

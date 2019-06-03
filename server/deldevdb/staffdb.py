@@ -176,6 +176,10 @@ class StaffDB(DB):
         #text += self._list_reports( user_id, 1)
         return text
 
+    def support_formats():
+        """list of user-row formats supported below"""
+        return array('text', 'name', 'md', 'email')
+
     def format_user_row(self, row):
         text = ''
         if not row:
@@ -187,10 +191,13 @@ class StaffDB(DB):
 
         if self.user_row_format == 'text':
             text += "%s%s (%s)  - %s [ %s ]" % ( aflag, row['name'], row['user_id'], row['title'], row['department'])
+        elif self.user_row_format == 'name' or self.user_row_format == 'plain':
+            text += "%s%s (%s)" % ( aflag, row['name'], row['user_id'])
         elif self.user_row_format == 'email':
             text += "%s%s (%s) - %s  - %s [ %s ]" % ( aflag, row['name'], row['user_id'], row['email'], row['title'], row['department'])
         elif self.user_row_format == 'md':
-            text += "%s[%s|mailto:%s] (%s) _%s_ [ %s ]" % ( aflag, row['name'], row['user_id'], row['email'], row['title'], row['department'])
+            #text += "%s[%s|mailto:%s] (**%s**) _%s_ [ %s ]" % ( aflag, row['name'], row['email'], row['user_id'],  row['title'], row['department'])
+            text += "%s[%s](mailto:%s) (**%s**) _%s_ [ %s ]" % ( aflag, row['name'], row['email'], row['user_id'],  row['title'], row['department'])
         else:
             text = row['name']
 
