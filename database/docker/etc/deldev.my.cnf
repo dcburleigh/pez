@@ -1,0 +1,5 @@
+[client]
+host = localhost
+database = deldev
+user = deldevadmin
+password = adminpassword
