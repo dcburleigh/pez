@@ -52,6 +52,9 @@ ETC = ./etc
 #
 LINK = --link deldevdb0:deldevdb
 
+# Map the MySQL container to the alias 'deldevdb' used in the CNF files
+LINK = --link pezdb:deldevdb
+
 VOLUMES = $(LINK)
 
 #  .....................................................................
@@ -96,6 +99,7 @@ $(SRCPATH)/deldev_db.cnf: $(SRCPATH)/%: $(ETC)/%
 env.txt: %: $(ETC)/%
 	cp $< $@
 
+# edit these manually
 etc-files: env.txt  $(SRCPATH)/deldev_db.cnf
 
 

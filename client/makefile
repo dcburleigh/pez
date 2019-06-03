@@ -1,4 +1,19 @@
 
+
+# .......................................
+# Use this code for testing
+#
+#
+# usage:
+#  mkdir client
+#  cp GIT/pez/client/makefile .
+#  edit makefile.conf
+#  make install
+#
+# use the 'show' tool to access the code running directly on the host
+# use the 'client' tool to access the code running in the container
+#
+# .......................................
 REPOROOT = /git
 
 #SOPT = --server host
@@ -11,11 +26,7 @@ T = managers
 
 -include makefile.conf
 
-# usage:
-#  mkdir client
-#  cp GIT/pez/client/makefile .
-#  edit makefile.conf
-#  make install
+
 # .......................................
 
 REPO = $(REPOROOT)/pez
@@ -46,7 +57,6 @@ endif
 
 #  .....................................................................
 
-
 create-hook: check-auth-token client-files  py-project
 	python hooks.py --hello $(SOPT)
 
@@ -65,8 +75,11 @@ hello-local: check-auth-token client-files
 whois: client-files
 	@PEZ_AUTH_TOKEN=$(PEZ_AUTH_TOKEN) python client.py $(SOPT) --whois --userid 2474
 
-HFILE = hook_message.json
-#HFILE = data/hook_message_whois.json
+
+#
+# sample hook message
+# for testing
+#
 HFILE = data/hook_message_name.json
 HFILE = data/hook_message_reports.json
 #HFILE = data/hook_message_managers.json
@@ -80,7 +93,7 @@ HFILE = data/hook_message_$(T).json
 
 display-hook: check-auth-token  client-files server-files $(HFILE)
 	echo f is $(HFILE)
-	python show.py --hook $(HFILE) --display 
+	python show.py --hook $(HFILE) --display
 
 show-hook: check-auth-token  client-files server-files $(HFILE)
 	echo f is $(HFILE)
