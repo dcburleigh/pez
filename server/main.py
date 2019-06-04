@@ -105,7 +105,7 @@ def directory():
 
     if msg.from_me():
         # don't respond to my own posts
-        print("skip me")
+        #print("skip me")
         return ''
 
     if not msg.check_org():
