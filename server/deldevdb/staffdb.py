@@ -56,11 +56,13 @@ class StaffDB(DB):
             if not row:
                 break
 
-            n += 1
             if row['active'] == 1:
                 na += 1
             elif not self.include_inactive:
                 continue
+
+            n += 1
+            text = "{}".format(n) + text 
             text += self.format_user_row(row)
             text += "\n"
 

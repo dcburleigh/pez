@@ -7,7 +7,7 @@ last_err = None
 staff_dbh = None
 staff_dbh = StaffDB()
 help_pattern = re.compile('.*help.*', re.I)
-whois_pattern = re.compile('who\s*is (\w+)\s*', re.I)
+whois_pattern = re.compile('who\s*is \s+ (\w+)', re.I | re.X )
 lookup_pattern = re.compile('lookup\s+(name|userid|email)\s+([\@\w\.\']+)', re.I)
 lookup_name_pattern = re.compile('lookup\s+name\s+(\w+)\s+(\w+)', re.I)
 lookup_last_name_pattern = re.compile('lookup\s+last( name)?\s+(\w+)\s+(\w+)', re.I)
@@ -32,7 +32,7 @@ def pez_handler( msg ):
 
     #staff_dbh.user_row_format = 'email'
     resp = response_message(msg)
-    print("last query:%s" % staff_dbh.sql )
+    print("r=%s last query:%s" % (resp, staff_dbh.sql ))
     #print("message from: %s " % msg.creator_name )
     try:
         post_response(msg, resp)
@@ -67,7 +67,7 @@ def post_response(msg, resp):
             #print(text)
             text = ''
         text += line + "\n"
-        
+
     if staff_dbh.user_row_format == 'md':
         api.messages.create( roomId=room_id,  markdown=text)
     else:
@@ -87,6 +87,13 @@ def response_message(msg):
     result = whois_pattern.search(msg.message_text)
     if result:
         user_id = result.group(1)
+        print("whois: %s " % user_id )
+        if user_id == '007':
+            return "Bond, James Bond"
+        if user_id == 'number 2' or user_id == 'number2' or user_id == '2':
+            return "You are number 6"
+        if user_id == '1337':
+            return "H@x05"
         #print("whois: %s" % user_id)
         return staff_dbh.whois(user_id)
 
@@ -153,6 +160,8 @@ def lookup(type, value):
         return staff_dbh.lookup_email(value)
 
     if type == 'name':
+
+
         value += '%'
         #print("lookup (%s): '%s' " % (type, value))
         return staff_dbh.lookup_name(value)
