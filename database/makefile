@@ -6,7 +6,7 @@ REPO = $(REPOROOT)/pez
 
 # 1) create tables in local MySQL database
 
-F1 = makefile create_tables.sql export.sh import.sh 
+F1 = makefile create_tables.sql export.sh import.sh
 
 $(F1): %: $(REPO)/database/%
 	cp $< $@
